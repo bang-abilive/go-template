@@ -10,7 +10,7 @@ tmp_dir = "tmp"
   args_bin = []
   bin = "./tmp/main"
   # cmd = "go build -o ./tmp/main ." # For production
-  cmd = "go build -gcflags=all=\"-N -l\" -o ./tmp/main ." # For debugging
+  cmd = "go build -gcflags=all=\"-N -l\" -o ./tmp/main ./cmd/api" # For debugging
   delay = 1000
   entrypoint = [
     "dlv", 
