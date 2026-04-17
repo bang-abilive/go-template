@@ -6,9 +6,19 @@ import (
 
 	"github.com/labstack/echo/v5"
 	"github.com/labstack/echo/v5/middleware"
+
+	"ndinhbang/go-skeleton/internal/config"
 )
 
 func main() {
+	cfg, err := config.Load()
+	if err != nil {
+		slog.Error("failed to load config", "error", err)
+		return
+	}
+
+	// Print all config
+	slog.Info("config", "config", cfg)
 
 	// Echo instance
 	e := echo.New()
@@ -21,7 +31,7 @@ func main() {
 	e.GET("/", hello)
 
 	// Start server
-	if err := e.Start(":8080"); err != nil {
+	if err := e.Start(cfg.ServerAddress()); err != nil {
 		slog.Error("failed to start server", "error", err)
 	}
 }

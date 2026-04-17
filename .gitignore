@@ -1,2 +1,6 @@
 tmp/
 testdata/
+.env
+.env.local
+.env.*.local
+vendor/
