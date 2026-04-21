@@ -2,131 +2,79 @@ package config
 
 import (
 	"fmt"
+	"log/slog"
 	"os"
-	"strconv"
 	"strings"
 	"time"
 
-	"github.com/knadh/koanf/parsers/dotenv"
-	"github.com/knadh/koanf/providers/file"
-	"github.com/knadh/koanf/v2"
+	"github.com/caarlos0/env/v11"
+	"github.com/joho/godotenv"
 )
+
+type AppConfig struct {
+	Env     string `env:"APP_ENV,notEmpty" envDefault:"development"`
+	Debug   bool   `env:"APP_DEBUG" envDefault:"false"`
+	Name    string `env:"APP_NAME"`
+	Version string `env:"APP_VERSION" envDefault:"0.0.1"`
+}
+
+type DatabaseConfig struct {
+	Name             string        `env:"DB_NAME,notEmpty"`
+	Host             string        `env:"DB_HOST,notEmpty"`
+	Port             string        `env:"DB_PORT,notEmpty"`
+	User             string        `env:"DB_USER,notEmpty,unset"`
+	Password         string        `env:"DB_PASSWORD,notEmpty,unset"`
+	SSLMode          string        `env:"DB_SSL_MODE" envDefault:"disable"`
+	MaxConns         int           `env:"DB_MAX_CONNS" envDefault:"10"`
+	MaxIdleConns     int           `env:"DB_MAX_IDLE_CONNS" envDefault:"5"`
+	MaxLifetimeConns time.Duration `env:"DB_MAX_LIFETIME_CONNS" envDefault:"1h"`
+}
+
+type ServerConfig struct {
+	Port uint16 `env:"SERVER_PORT,notEmpty" envDefault:"8080"`
+}
 
 type Config struct {
-	AppEnv     string `koanf:"APP_ENV"`
-	AppName    string `koanf:"APP_NAME"`
-	AppVersion string `koanf:"APP_VERSION"`
-
-	ServerPort string `koanf:"SERVER_PORT"`
-
-	DatabaseHost             string        `koanf:"DB_HOST"`
-	DatabasePort             string        `koanf:"DB_PORT"`
-	DatabaseUser             string        `koanf:"DB_USER"`
-	DatabasePassword         string        `koanf:"DB_PASSWORD"`
-	DatabaseName             string        `koanf:"DB_NAME"`
-	DatabaseSSLMode          string        `koanf:"DB_SSL_MODE"`
-	DatabaseMaxConns         int           `koanf:"DB_MAX_CONNS"`
-	DatabaseMaxIdleConns     int           `koanf:"DB_MAX_IDLE_CONNS"`
-	DatabaseMaxLifetimeConns time.Duration `koanf:"DB_MAX_LIFETIME_CONNS"`
+	App      AppConfig
+	Database DatabaseConfig
+	Server   ServerConfig
 }
 
-const (
-	defaultServerPort = "8080"
-	envDevelopment    = "development"
-	envTest           = "test"
-	envStaging        = "staging"
-	envProduction     = "production"
-	defaultAppEnv     = envDevelopment
-)
-
-var validAppEnvs = []string{
-	envDevelopment,
-	envTest,
-	envStaging,
-	envProduction,
-}
-
-var allowedAppEnvs = map[string]struct{}{
-	envDevelopment: {},
-	envTest:        {},
-	envStaging:     {},
-	envProduction:  {},
-}
-
-func Load() (*Config, error) {
+// LoadFromEnv loads layered .env files into the process environment, then parses into [Config].
+func LoadFromEnv() (*Config, error) {
 	mode := strings.TrimSpace(os.Getenv("APP_ENV"))
 	if mode == "" {
-		mode = defaultAppEnv
+		mode = "development"
 	}
 
-	k := koanf.New(".")
-	loadOrder := []string{
-		".env",
+	candidates := []string{
+		".env." + mode + ".local",
+		".env." + mode,
 		".env.local",
-		fmt.Sprintf(".env.%s", mode),
-		fmt.Sprintf(".env.%s.local", mode),
+		".env",
 	}
 
-	for _, path := range loadOrder {
-		if err := k.Load(file.Provider(path), dotenv.Parser()); err != nil {
-			if os.IsNotExist(err) {
-				continue
-			}
-			return nil, fmt.Errorf("load env file %q: %w", path, err)
+	for _, file := range candidates {
+		if _, err := os.Stat(file); err == nil {
+			_ = godotenv.Load(file)
+			slog.Info("[config] loaded env file", "file", file)
 		}
 	}
 
-	cfg := &Config{
-		AppEnv:     mode,
-		ServerPort: defaultServerPort,
-	}
-
-	if err := k.UnmarshalWithConf("", cfg, koanf.UnmarshalConf{
-		Tag:       "koanf",
-		FlatPaths: true,
-	}); err != nil {
-		return nil, fmt.Errorf("unmarshal config: %w", err)
-	}
-
-	cfg.AppEnv = strings.TrimSpace(cfg.AppEnv)
-	if cfg.AppEnv == "" {
-		cfg.AppEnv = mode
-	}
-	if _, ok := allowedAppEnvs[cfg.AppEnv]; !ok {
-		return nil, fmt.Errorf("invalid APP_ENV %q: must be one of %s", cfg.AppEnv, strings.Join(validAppEnvs, "|"))
-	}
-
-	cfg.ServerPort = strings.TrimSpace(cfg.ServerPort)
-	if cfg.ServerPort == "" {
-		cfg.ServerPort = defaultServerPort
-	}
-	port, err := strconv.Atoi(cfg.ServerPort)
+	cfg, err := env.ParseAs[Config]()
 	if err != nil {
-		return nil, fmt.Errorf("invalid SERVER_PORT %q: must be an integer", cfg.ServerPort)
-	}
-	if port < 1 || port > 65535 {
-		return nil, fmt.Errorf("invalid SERVER_PORT %q: must be between 1 and 65535", cfg.ServerPort)
+		return nil, fmt.Errorf("[config] parse env: %w", err)
 	}
 
-	return cfg, nil
+	slog.Info("[config] environment", "env", cfg.App.Env)
+
+	return &cfg, nil
 }
 
 func (c Config) ServerAddress() string {
-	return ":" + c.ServerPort
+	return fmt.Sprintf(":%d", c.Server.Port)
 }
 
-func (c Config) IsProduction() bool {
-	return c.AppEnv == envProduction
-}
-
-func (c Config) IsDevelopment() bool {
-	return c.AppEnv == envDevelopment
-}
-
-func (c Config) IsTest() bool {
-	return c.AppEnv == envTest
-}
-
-func (c Config) IsStaging() bool {
-	return c.AppEnv == envStaging
-}
+// func (c Config) DatabaseDSN() string {
+// 	return fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=%s", c.Database.Host, c.Database.Port, c.Database.User, c.Database.Password, c.Database.Name, c.Database.SSLMode)
+// }
