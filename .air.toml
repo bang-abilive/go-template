@@ -31,8 +31,19 @@ tmp_dir = "tmp"
   full_bin = ""
   ignore_dangerous_root_dir = false
   include_dir = []
-  include_ext = ["go", "tpl", "tmpl", "html", "env", "json", "yaml", "yml"]
-  include_file = []
+  include_ext = ["go", "tpl", "tmpl", "html", "json", "yaml", "yml"]
+  include_file = [
+    ".env",
+    ".env.local",
+    ".env.development.local",
+    ".env.development",
+    ".env.test.local",
+    ".env.test",
+    ".env.staging.local",
+    ".env.staging",
+    ".env.production.local",
+    ".env.production",
+  ]
   kill_delay = "0s"
   log = "build-errors.log"
   poll = false
@@ -42,7 +53,7 @@ tmp_dir = "tmp"
   rerun = false
   rerun_delay = 500
   send_interrupt = false
-  stop_on_error = true
+  stop_on_error = false
 
 [color]
   app = ""
@@ -66,5 +77,5 @@ tmp_dir = "tmp"
   proxy_port = 0
 
 [screen]
-  clear_on_rebuild = true
+  clear_on_rebuild = false
   keep_scroll = true
