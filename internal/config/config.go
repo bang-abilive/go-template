@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log/slog"
 	"os"
+	"regexp"
 	"strings"
 	"time"
 
@@ -40,11 +41,18 @@ type Config struct {
 	Server   ServerConfig
 }
 
+// safeEnvName rejects any APP_ENV value that contains path-traversal characters.
+// Only alphanumeric, hyphens, and underscores are allowed (e.g. "development", "prod-us").
+var safeEnvName = regexp.MustCompile(`^[a-zA-Z0-9_-]+$`)
+
 // LoadFromEnv loads layered .env files into the process environment, then parses into [Config].
 func LoadFromEnv() (*Config, error) {
 	mode := strings.TrimSpace(os.Getenv("APP_ENV"))
 	if mode == "" {
 		mode = "development"
+	}
+	if !safeEnvName.MatchString(mode) {
+		return nil, fmt.Errorf("[config] invalid APP_ENV value %q: only alphanumeric, hyphens, and underscores are allowed", mode)
 	}
 
 	candidates := []string{
@@ -55,10 +63,14 @@ func LoadFromEnv() (*Config, error) {
 	}
 
 	for _, file := range candidates {
-		if _, err := os.Stat(file); err == nil {
-			_ = godotenv.Load(file)
-			slog.Info("[config] loaded env file", "file", file)
+		if _, err := os.Stat(file); err != nil {
+			continue
 		}
+		if err := godotenv.Load(file); err != nil {
+			slog.Warn("[config] failed to load env file", "file", file, "error", err)
+			continue
+		}
+		slog.Info("[config] loaded env file", "file", file)
 	}
 
 	cfg, err := env.ParseAs[Config]()

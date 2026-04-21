@@ -4,6 +4,7 @@ import (
 	"log/slog"
 	"net/http"
 	"os"
+	"time"
 
 	"github.com/labstack/echo/v5"
 	"github.com/labstack/echo/v5/middleware"
@@ -12,11 +13,17 @@ import (
 )
 
 func main() {
+	loadStart := time.Now()
 	cfg, err := config.LoadFromEnv()
+	loadDuration := time.Since(loadStart)
 	if err != nil {
-		slog.Error("failed to load config", "error", err)
+		slog.Error("failed to load config", "error", err, "duration", loadDuration)
 		os.Exit(1)
 	}
+	slog.Info("[config] load from env", "duration", loadDuration)
+
+	// print go env
+	slog.Info("[go] env", "env", os.Environ())
 
 	// Print all config
 	slog.Info("[config] app name", "name", cfg.App.Name)
