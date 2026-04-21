@@ -13,3 +13,8 @@ clean:
 .PHONY: test
 test:
 	go test -race -count=1 -v -covermode=atomic ./...
+
+.PHONY: coverage
+coverage:
+	go test -race -count=1 -v -coverprofile=./tmp/coverage.out -covermode=atomic ./...
+	go tool cover -html=./tmp/coverage.out -o ./tmp/coverage.html
