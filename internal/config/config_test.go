@@ -68,7 +68,7 @@ func TestServerAddress(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 			cfg := Config{Server: ServerConfig{Port: tt.port}}
-			assert.Equal(t, tt.expected, cfg.ServerAddress())
+			assert.Equal(t, tt.expected, cfg.Server.ServerAddress())
 		})
 	}
 }
