@@ -1,8 +1,13 @@
 package main
 
 import (
+	"context"
+	"errors"
 	"log/slog"
+	"net/http"
 	"os"
+	"os/signal"
+	"syscall"
 	"time"
 
 	"ndinhbang/go-skeleton/internal/config"
@@ -19,10 +24,14 @@ func main() {
 	}
 	slog.Info("[config] load from env", "duration", loadDuration)
 
+	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
+	defer stop()
+
 	srv := server.New(&cfg.Server)
 	srv.SetupMiddlewares()
+	srv.SetupRoutes()
 
-	if err := srv.Start(); err != nil {
+	if err := srv.Start(ctx); err != nil && !errors.Is(err, http.ErrServerClosed) {
 		slog.Error("failed to start server", "error", err)
 		os.Exit(1)
 	}
