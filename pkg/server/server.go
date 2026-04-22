@@ -4,9 +4,9 @@ import (
 	"context"
 	"log/slog"
 
-	"ndinhbang/go-skeleton/internal/config"
-
 	"github.com/labstack/echo/v5"
+
+	"ndinhbang/go-skeleton/pkg/config"
 )
 
 type Server struct {

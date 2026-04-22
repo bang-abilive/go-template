@@ -2,37 +2,34 @@ package main
 
 import (
 	"context"
-	"errors"
 	"log/slog"
-	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
-	"time"
 
-	"ndinhbang/go-skeleton/internal/config"
-	"ndinhbang/go-skeleton/internal/server"
+	"ndinhbang/go-skeleton/internal/app"
+	"ndinhbang/go-skeleton/pkg/config"
 )
 
 func main() {
-	loadStart := time.Now()
+	if err := run(); err != nil {
+		slog.Error("[main] failed to start", "error", err)
+		os.Exit(1)
+	}
+}
+
+func run() error {
+	// Load the configuration
 	cfg, err := config.LoadFromEnv()
-	loadDuration := time.Since(loadStart)
 	if err != nil {
-		slog.Error("failed to load config", "error", err, "duration", loadDuration)
-		os.Exit(1)
+		return err
 	}
-	slog.Info("[config] load from env", "duration", loadDuration)
-
+	// Setup signal handling
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
+	// Stop listening for signals when the context is done
 	defer stop()
-
-	srv := server.New(&cfg.Server)
-	srv.SetupMiddlewares()
-	srv.SetupRoutes()
-
-	if err := srv.Start(ctx); err != nil && !errors.Is(err, http.ErrServerClosed) {
-		slog.Error("failed to start server", "error", err)
-		os.Exit(1)
-	}
+	// Create the application
+	app := app.NewApp(cfg)
+	// Run the application
+	return app.Run(ctx)
 }

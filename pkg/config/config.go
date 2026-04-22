@@ -64,6 +64,7 @@ func LoadFromEnv() (*Config, error) {
 
 	for _, file := range candidates {
 		if _, err := os.Stat(file); err != nil {
+			slog.Warn("[config] file not found", "file", file, "error", err)
 			continue
 		}
 		if err := godotenv.Load(file); err != nil {
