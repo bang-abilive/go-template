@@ -1,29 +1,42 @@
-# Module management
+## Module management
+
+```bash
 go mod init github.com/user/project  # Create new module
 go mod tidy                          # Clean up dependencies
 go mod download                      # Download dependencies
 go mod vendor                        # Copy deps to vendor/
 go get -u ./...                      # Update all dependencies
+```
 
-# Building and running
+## Building and running
+
+```bash
 go build ./...                       # Build all packages
 go run .                             # Run current package
 go install ./...                     # Install binaries to GOPATH/bin
+```
 
-# Testing
+## Testing
+
+```bash
 go test ./...                        # Run all tests
 go test -v ./...                     # Verbose output
 go test -race ./...                  # Enable race detector
 go test -cover ./...                 # Show coverage percentage
 go test -bench=. ./...               # Run benchmarks
+```
 
-# Code quality
+## Code quality
+
+```bash
 go fmt ./...                         # Format all code
 go vet ./...                         # Run static analysis
 golangci-lint run                    # Run all linters
+```
 
-# Project structure (Hexagonal/Clean Architecture)
+## Project structure (Hexagonal/Clean Architecture)
 
+```text
 .
 ├── cmd/
 │   └── api/
@@ -51,3 +64,4 @@ golangci-lint run                    # Run all linters
 ├── .env                      # Biến môi trường
 ├── go.mod                    # Module dependencies
 └── go.sum                    # Module checksums
+```
