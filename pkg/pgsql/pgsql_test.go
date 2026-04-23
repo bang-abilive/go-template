@@ -16,7 +16,7 @@ import (
 )
 
 // *pgsqlCompat must implement [database.Database] (see ndinhbang/go-skeleton/internal/database).
-var _ database.Database = (*pgsqlPool)(nil)
+var _ database.Database = (*pgsqlNative)(nil)
 
 // assertUnreachableDBError accepts multiple failure modes when nothing is listening
 // on the target (e.g. connection refused, i/o timeout, or context deadline from a short Ping timeout).
@@ -100,7 +100,7 @@ func TestNewPgsqlPool_parseError(t *testing.T) {
 
 			cfg := testDatabaseConfig()
 			tt.mut(cfg)
-			_, err := NewPgsqlPool(ctx, cfg)
+			_, err := NewPgsqlNative(ctx, cfg)
 			require.Error(t, err)
 			assert.ErrorContains(t, err, tt.want)
 		})
@@ -112,7 +112,7 @@ func TestPgsqlPool_HealthCheck_unreachable(t *testing.T) {
 	ctxPool, cancelPool := context.WithTimeout(context.Background(), 15*time.Second)
 	t.Cleanup(cancelPool)
 
-	p, err := NewPgsqlPool(ctxPool, testDatabaseConfig())
+	p, err := NewPgsqlNative(ctxPool, testDatabaseConfig())
 	require.Nil(t, p)
 	assertUnreachableDBError(t, err)
 }

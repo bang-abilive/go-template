@@ -10,11 +10,11 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
-type pgsqlPool struct {
+type pgsqlNative struct {
 	pool *pgxpool.Pool
 }
 
-func NewPgsqlPool(ctx context.Context, cfg *config.DatabaseConfig) (*pgsqlPool, error) {
+func NewPgsqlNative(ctx context.Context, cfg *config.DatabaseConfig) (*pgsqlNative, error) {
 	config, err := pgxpool.ParseConfig(cfg.DatabaseDSN())
 	if err != nil {
 		return nil, fmt.Errorf("[pgsql/pool] failed to parse database config: %w", err)
@@ -36,10 +36,10 @@ func NewPgsqlPool(ctx context.Context, cfg *config.DatabaseConfig) (*pgsqlPool, 
 		return nil, fmt.Errorf("[pgsql/pool] unable to ping database: %w", err)
 	}
 
-	return &pgsqlPool{pool: pool}, nil
+	return &pgsqlNative{pool: pool}, nil
 }
 
-func (p *pgsqlPool) Close(ctx context.Context) error {
+func (p *pgsqlNative) Close(ctx context.Context) error {
 	if p.pool == nil {
 		return fmt.Errorf("[pgsql/pool] connection pool is already closed or not initialized")
 	}
@@ -50,7 +50,7 @@ func (p *pgsqlPool) Close(ctx context.Context) error {
 
 // Health checks the health of the database connection by pinging the database.
 // It returns a map with keys indicating various health statistics.
-func (p *pgsqlPool) Health(ctx context.Context) (map[string]string, error) {
+func (p *pgsqlNative) Health(ctx context.Context) (map[string]string, error) {
 	ctx, cancel := context.WithTimeout(ctx, 1*time.Second)
 	defer cancel()
 
