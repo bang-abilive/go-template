@@ -20,15 +20,19 @@ type AppConfig struct {
 }
 
 type DatabaseConfig struct {
-	Name             string        `env:"DB_NAME,notEmpty"`
-	Host             string        `env:"DB_HOST,notEmpty"`
-	Port             string        `env:"DB_PORT,notEmpty"`
-	User             string        `env:"DB_USER,notEmpty,unset"`
-	Password         string        `env:"DB_PASSWORD,notEmpty,unset"`
-	SSLMode          string        `env:"DB_SSL_MODE" envDefault:"disable"`
-	MaxConns         int           `env:"DB_MAX_CONNS" envDefault:"10"`
-	MaxIdleConns     int           `env:"DB_MAX_IDLE_CONNS" envDefault:"5"`
-	MaxLifetimeConns time.Duration `env:"DB_MAX_LIFETIME_CONNS" envDefault:"1h"`
+	Name         string `env:"DB_NAME,notEmpty"`
+	Schema       string `env:"DB_SCHEMA,notEmpty" envDefault:"public"`
+	Host         string `env:"DB_HOST,notEmpty"`
+	Port         uint16 `env:"DB_PORT,notEmpty" envDefault:"5432"`
+	User         string `env:"DB_USER,notEmpty,unset"`
+	Password     string `env:"DB_PASSWORD,notEmpty,unset"`
+	SSLMode      string `env:"DB_SSL_MODE" envDefault:"disable"`
+	MaxConns     int32  `env:"DB_MAX_CONNS" envDefault:"20"`
+	MinConns     int32  `env:"DB_MIN_CONNS" envDefault:"5"`
+	MaxIdleConns int32  `env:"DB_MAX_IDLE_CONNS" envDefault:"5"`
+	// MaxLifetimeConns time.Duration `env:"DB_MAX_LIFETIME_CONNS" envDefault:"1h"`
+	MaxConnIdleTime time.Duration `env:"DB_MAX_CONN_IDLE_TIME" envDefault:"10m"`
+	MaxConnLifetime time.Duration `env:"DB_MAX_CONN_LIFETIME" envDefault:"1h"`
 }
 
 type ServerConfig struct {
@@ -64,14 +68,14 @@ func LoadFromEnv() (*Config, error) {
 
 	for _, file := range candidates {
 		if _, err := os.Stat(file); err != nil {
-			slog.Warn("[config] file not found", "file", file, "error", err)
+			slog.Warn("[config] not found:", "file", file)
 			continue
 		}
 		if err := godotenv.Load(file); err != nil {
-			slog.Warn("[config] failed to load env file", "file", file, "error", err)
+			slog.Warn("[config] failed to load:", "file", file, "error", err)
 			continue
 		}
-		slog.Info("[config] loaded env file", "file", file)
+		slog.Info("[config] loaded:", "file", file)
 	}
 
 	cfg, err := env.ParseAs[Config]()
@@ -88,6 +92,6 @@ func (s ServerConfig) ServerAddress() string {
 	return fmt.Sprintf(":%d", s.Port)
 }
 
-// func (c Config) DatabaseDSN() string {
-// 	return fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=%s", c.Database.Host, c.Database.Port, c.Database.User, c.Database.Password, c.Database.Name, c.Database.SSLMode)
-// }
+func (c DatabaseConfig) DatabaseDSN() string {
+	return fmt.Sprintf("postgres://%s:%s@%s:%d/%s?sslmode=%s&search_path=%s", c.User, c.Password, c.Host, c.Port, c.Name, c.SSLMode, c.Schema)
+}

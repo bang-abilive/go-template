@@ -16,7 +16,7 @@ var allConfigVars = []string{
 	"APP_ENV", "APP_DEBUG", "APP_NAME", "APP_VERSION",
 	"SERVER_PORT",
 	"DB_NAME", "DB_HOST", "DB_PORT", "DB_USER", "DB_PASSWORD",
-	"DB_SSL_MODE", "DB_MAX_CONNS", "DB_MAX_IDLE_CONNS", "DB_MAX_LIFETIME_CONNS",
+	"DB_SSL_MODE", "DB_MAX_CONNS", "DB_MAX_IDLE_CONNS", "DB_MAX_CONN_LIFETIME",
 }
 
 // isolateEnv lưu trạng thái hiện tại của tất cả config vars và khôi phục sau test.
@@ -73,6 +73,39 @@ func TestServerAddress(t *testing.T) {
 	}
 }
 
+func TestDatabaseDSN(t *testing.T) {
+	t.Parallel()
+
+	tests := []struct {
+		name string
+		cfg  DatabaseConfig
+		want string
+	}{
+		{
+			name: "typical",
+			cfg: DatabaseConfig{
+				Name: "appdb", Schema: "public", Host: "db.example.com", Port: 5432,
+				User: "alice", Password: "s3cret", SSLMode: "require",
+			},
+			want: "postgres://alice:s3cret@db.example.com:5432/appdb?sslmode=require&search_path=public",
+		},
+		{
+			name: "custom_schema",
+			cfg: DatabaseConfig{
+				Name: "x", Schema: "custom", Host: "127.0.0.1", Port: 1,
+				User: "u", Password: "p", SSLMode: "disable",
+			},
+			want: "postgres://u:p@127.0.0.1:1/x?sslmode=disable&search_path=custom",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+			assert.Equal(t, tt.want, tt.cfg.DatabaseDSN())
+		})
+	}
+}
+
 // TestLoadFromEnv_DefaultValues kiểm tra rằng các giá trị mặc định được áp dụng đúng
 // khi không đặt các biến tùy chọn.
 func TestLoadFromEnv_DefaultValues(t *testing.T) {
@@ -92,13 +125,13 @@ func TestLoadFromEnv_DefaultValues(t *testing.T) {
 	is.Equal("0.0.1", cfg.App.Version)
 	is.Empty(cfg.App.Name)
 	is.Equal("disable", cfg.Database.SSLMode)
-	is.Equal(10, cfg.Database.MaxConns)
-	is.Equal(5, cfg.Database.MaxIdleConns)
-	is.Equal(time.Hour, cfg.Database.MaxLifetimeConns)
+	is.Equal(int32(20), cfg.Database.MaxConns)
+	is.Equal(int32(5), cfg.Database.MaxIdleConns)
+	is.Equal(time.Hour, cfg.Database.MaxConnLifetime)
 	is.Equal(uint16(8080), cfg.Server.Port)
 	is.Equal("testdb", cfg.Database.Name)
 	is.Equal("localhost", cfg.Database.Host)
-	is.Equal("5432", cfg.Database.Port)
+	is.Equal(uint16(5432), cfg.Database.Port)
 }
 
 // TestLoadFromEnv_CustomValues kiểm tra rằng các giá trị tùy chỉnh được parse đúng.
@@ -114,7 +147,7 @@ func TestLoadFromEnv_CustomValues(t *testing.T) {
 	t.Setenv("DB_SSL_MODE", "require")
 	t.Setenv("DB_MAX_CONNS", "20")
 	t.Setenv("DB_MAX_IDLE_CONNS", "3")
-	t.Setenv("DB_MAX_LIFETIME_CONNS", "30m")
+	t.Setenv("DB_MAX_CONN_LIFETIME", "30m")
 
 	cfg, err := LoadFromEnv()
 	must := require.New(t)
@@ -129,9 +162,9 @@ func TestLoadFromEnv_CustomValues(t *testing.T) {
 	is.Equal("1.2.3", cfg.App.Version)
 	is.Equal(uint16(9090), cfg.Server.Port)
 	is.Equal("require", cfg.Database.SSLMode)
-	is.Equal(20, cfg.Database.MaxConns)
-	is.Equal(3, cfg.Database.MaxIdleConns)
-	is.Equal(30*time.Minute, cfg.Database.MaxLifetimeConns)
+	is.Equal(int32(20), cfg.Database.MaxConns)
+	is.Equal(int32(3), cfg.Database.MaxIdleConns)
+	is.Equal(30*time.Minute, cfg.Database.MaxConnLifetime)
 }
 
 // TestLoadFromEnv_InvalidAppEnv kiểm tra rằng các giá trị APP_ENV không hợp lệ
@@ -195,8 +228,8 @@ func TestLoadFromEnv_ValidAppEnvNames(t *testing.T) {
 	}
 }
 
-// TestLoadFromEnv_MissingRequiredFields kiểm tra rằng thiếu các trường bắt buộc
-// trong cấu hình database sẽ trả về lỗi.
+// TestLoadFromEnv_MissingRequiredFields kiểm tra rằng thiếu hoặc rỗng các trường bắt buộc
+// trong cấu hình database sẽ trả về lỗi. (DB_PORT rỗng không thử: có envDefault nên vẫn parse được.)
 func TestLoadFromEnv_MissingRequiredFields(t *testing.T) {
 	tests := []struct {
 		name  string
@@ -218,16 +251,6 @@ func TestLoadFromEnv_MissingRequiredFields(t *testing.T) {
 				t.Setenv("DB_NAME", "testdb")
 				t.Setenv("DB_HOST", "")
 				t.Setenv("DB_PORT", "5432")
-				t.Setenv("DB_USER", "user")
-				t.Setenv("DB_PASSWORD", "pass")
-			},
-		},
-		{
-			name: "empty DB_PORT",
-			setup: func(t *testing.T) {
-				t.Setenv("DB_NAME", "testdb")
-				t.Setenv("DB_HOST", "localhost")
-				t.Setenv("DB_PORT", "")
 				t.Setenv("DB_USER", "user")
 				t.Setenv("DB_PASSWORD", "pass")
 			},
@@ -290,7 +313,7 @@ func TestLoadFromEnv_LoadsDotEnvFile(t *testing.T) {
 
 	is.Equal("filedb", cfg.Database.Name)
 	is.Equal("filehost", cfg.Database.Host)
-	is.Equal("5433", cfg.Database.Port)
+	is.Equal(uint16(5433), cfg.Database.Port)
 }
 
 // TestLoadFromEnv_UnreadableEnvFile kiểm tra nhánh cảnh báo khi godotenv.Load thất bại.
