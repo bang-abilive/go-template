@@ -29,8 +29,7 @@ func assertUnreachableDBError(t *testing.T, err error) {
 	if errors.Is(err, context.Canceled) {
 		return
 	}
-	var opErr *net.OpError
-	if errors.As(err, &opErr) {
+	if opErr, ok := errors.AsType[*net.OpError](err); ok {
 		if opErr.Timeout() || opErr.Op == "dial" || opErr.Op == "read" {
 			return
 		}
@@ -113,15 +112,7 @@ func TestPgsqlPool_HealthCheck_unreachable(t *testing.T) {
 	ctxPool, cancelPool := context.WithTimeout(context.Background(), 15*time.Second)
 	t.Cleanup(cancelPool)
 
-	// NewWithConfig often returns before a successful TCP connect; failures surface on Ping/Acquire.
 	p, err := NewPgsqlPool(ctxPool, testDatabaseConfig())
-	require.NoError(t, err)
-	require.NotNil(t, p)
-	t.Cleanup(func() { p.Close(context.Background()) })
-
-	pingCtx, cancelPing := context.WithTimeout(context.Background(), 500*time.Millisecond)
-	t.Cleanup(cancelPing)
-
-	err = p.HealthCheck(pingCtx)
+	require.Nil(t, p)
 	assertUnreachableDBError(t, err)
 }

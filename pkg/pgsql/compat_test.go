@@ -23,7 +23,7 @@ func TestNewPgsqlCompat_HealthCheck_unreachable(t *testing.T) {
 	pingCtx, cancel := context.WithTimeout(context.Background(), 500*time.Millisecond)
 	t.Cleanup(cancel)
 
-	err = p.HealthCheck(pingCtx)
+	_, err = p.Health(pingCtx)
 	assertUnreachableDBError(t, err)
 }
 

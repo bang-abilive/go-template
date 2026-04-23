@@ -34,8 +34,8 @@ func (c *pgsqlCompat) Close(ctx context.Context) error {
 
 // Health checks the health of the database connection by pinging the database.
 // It returns a map with keys indicating various health statistics.
-func (c *pgsqlCompat) Health() map[string]string {
-	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
+func (c *pgsqlCompat) Health(ctx context.Context) (map[string]string, error) {
+	ctx, cancel := context.WithTimeout(ctx, 1*time.Second)
 	defer cancel()
 
 	stats := make(map[string]string)
@@ -45,7 +45,7 @@ func (c *pgsqlCompat) Health() map[string]string {
 	if err != nil {
 		stats["status"] = "down"
 		stats["error"] = fmt.Sprintf("db down: %v", err)
-		return stats
+		return stats, err
 	}
 
 	// Database is up, add more statistics
@@ -79,5 +79,5 @@ func (c *pgsqlCompat) Health() map[string]string {
 		stats["message"] = "Many connections are being closed due to max lifetime, consider increasing max lifetime or revising the connection usage pattern."
 	}
 
-	return stats
+	return stats, nil
 }
