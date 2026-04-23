@@ -21,3 +21,33 @@ go test -bench=. ./...               # Run benchmarks
 go fmt ./...                         # Format all code
 go vet ./...                         # Run static analysis
 golangci-lint run                    # Run all linters
+
+# Project structure (Hexagonal/Clean Architecture)
+
+.
+├── cmd/
+│   └── api/
+│       └── main.go           # Entry point: Nơi khởi tạo Container và chạy Server
+├── internal/
+│   ├── domain/               # TẦNG 1: BUSINESS LOGIC (Core) - Không phụ thuộc bên ngoài
+│   │   └── values/           # Value Objects (Email, Password, etc.)
+│   │   ├── entity/           # Các đối tượng nghiệp vụ (User, Article) và Value Objects
+│   │   └── repository/       # Interface định nghĩa các phương thức lưu trữ
+│   ├── usecase/              # TẦNG 2: APPLICATION LOGIC - Điều phối dữ liệu (Service Layer)
+│   │   ├── dto/              # Data Transfer Objects (Request/Response)
+│   │   └── user_uc.go        # Triển khai nghiệp vụ (ví dụ: Register, Login)
+│   ├── infrastructure/       # TẦNG 3: EXTERNAL TOOLS - Triển khai kỹ thuật chi tiết
+│   │   └── persistence/      # Implement Repository Interface bằng pgx (Postgres)
+│   │       └── pgx_user.go
+│   └── interface/            # TẦNG 4: DELIVERY MECHANISM - Giao tiếp với thế giới
+│       ├── http/             # Echo Web Framework (Handlers, Middlewares)
+│       │   ├── middleware/
+│       │   ├── handler/
+│       │   ├── presenter/
+│       │   └── router/
+│       └── grpc/             # gRPC
+├── pkg/                      # THƯ VIỆN DÙNG CHUNG - Các tiện ích không chứa logic nghiệp vụ
+│   └── pgsql/                # Khởi tạo pgxpool
+├── .env                      # Biến môi trường
+├── go.mod                    # Module dependencies
+└── go.sum                    # Module checksums
