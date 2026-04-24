@@ -272,7 +272,15 @@ func TestSetupRoutes(t *testing.T) {
 	t.Parallel()
 
 	srv := newTestServer(t)
-	srv.SetupRoutes()
+	srv.SetupRoutes([]echo.Route{
+		{
+			Method: http.MethodGet,
+			Path:   "/api/v1/hello",
+			Handler: func(c *echo.Context) error {
+				return c.String(http.StatusOK, "Hello, World!")
+			},
+		},
+	})
 
 	tests := []struct {
 		name       string
@@ -330,7 +338,15 @@ func TestSetupRoutes_MethodNotAllowed(t *testing.T) {
 	t.Parallel()
 
 	srv := newTestServer(t)
-	srv.SetupRoutes()
+	srv.SetupRoutes([]echo.Route{
+		{
+			Method: http.MethodGet,
+			Path:   "/api/v1/hello",
+			Handler: func(c *echo.Context) error {
+				return c.String(http.StatusOK, "Hello, World!")
+			},
+		},
+	})
 
 	tests := []struct {
 		name   string
@@ -363,7 +379,7 @@ func TestConcurrentRequests(t *testing.T) {
 	t.Parallel()
 
 	srv := newTestServer(t)
-	srv.SetupRoutes()
+	srv.SetupRoutes(nil)
 
 	const workers = 50
 	var (
@@ -702,7 +718,7 @@ func TestServe_GracefulShutdown_ClosesIdleConnections(t *testing.T) {
 func ExampleServer_SetupRoutes() {
 	srv := New(&config.ServerConfig{Port: 8080})
 	srv.SetupMiddlewares()
-	srv.SetupRoutes()
+	srv.SetupRoutes(nil)
 
 	req := httptest.NewRequest(http.MethodGet, "/health", nil)
 	rec := httptest.NewRecorder()
