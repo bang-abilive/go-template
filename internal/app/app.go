@@ -6,8 +6,14 @@ import (
 
 	"net/http"
 
+	v1 "ndinhbang/go-skeleton/internal/delivery/http/v1"
+	"ndinhbang/go-skeleton/internal/repository/postgres"
+	"ndinhbang/go-skeleton/internal/usecase/user"
 	"ndinhbang/go-skeleton/pkg/config"
+	"ndinhbang/go-skeleton/pkg/pgsql"
 	"ndinhbang/go-skeleton/pkg/server"
+
+	"github.com/labstack/echo/v5"
 )
 
 type App struct {
@@ -20,9 +26,29 @@ func NewApp(cfg *config.Config) *App {
 }
 
 func (a *App) Run(ctx context.Context) error {
+	db, err := pgsql.NewPgsqlNative(ctx, &a.cfg.Database)
+	if err != nil {
+		return err
+	}
+	defer db.Close(ctx)
+
+	userRepo := postgres.NewPgxUserRepository(db.Pool())
+	userService := user.NewService(userRepo)
+	userHandler := v1.NewUserHandler(userService)
+
 	a.srv = server.New(&a.cfg.Server)
 	a.srv.SetupMiddlewares()
-	a.srv.SetupRoutes()
+
+	routes := []echo.Route{
+		{
+			Method:  "POST",
+			Path:    "/api/v1/users/register",
+			Handler: userHandler.Register,
+		},
+	}
+
+	a.srv.SetupRoutes(routes)
+
 	if err := a.srv.Start(ctx); err != nil && !errors.Is(err, http.ErrServerClosed) {
 		return err
 	}

@@ -10,6 +10,14 @@ run:
 clean:
 	rm -rf ./tmp
 
+.PHONY: up
+up:
+	docker compose up -d
+
+.PHONY: down
+down:
+	docker compose down
+
 .PHONY: test
 test:
 	go test -race -count=1 -v -covermode=atomic ./...

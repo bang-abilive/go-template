@@ -39,6 +39,10 @@ func NewPgsqlNative(ctx context.Context, cfg *config.DatabaseConfig) (*pgsqlNati
 	return &pgsqlNative{pool: pool}, nil
 }
 
+func (p *pgsqlNative) Pool() *pgxpool.Pool {
+	return p.pool
+}
+
 func (p *pgsqlNative) Close(ctx context.Context) error {
 	if p.pool == nil {
 		return fmt.Errorf("[pgsql/pool] connection pool is already closed or not initialized")
