@@ -5,8 +5,6 @@ import (
 	"errors"
 	"ndinhbang/go-skeleton/internal/domain/entity"
 	"ndinhbang/go-skeleton/internal/domain/values"
-
-	"github.com/google/uuid"
 )
 
 type Service interface {
@@ -39,7 +37,6 @@ func (s *service) Register(ctx context.Context, in RegisterUserRequest) (Registe
 
 	// 3. Khởi tạo Entity
 	u := &entity.User{
-		ID:       uuid.New().String(),
 		Email:    emailVO,
 		Password: in.Password, // Thực tế cần hash password ở đây
 	}
@@ -49,5 +46,9 @@ func (s *service) Register(ctx context.Context, in RegisterUserRequest) (Registe
 		return RegisterUserResponse{}, err
 	}
 
-	return RegisterUserResponse{ID: u.ID, Email: u.Email.Value()}, nil
+	return RegisterUserResponse{
+		ID:        u.ID,
+		Email:     u.Email.Value(),
+		CreatedAt: u.CreatedAt,
+	}, nil
 }
