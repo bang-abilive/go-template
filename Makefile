@@ -58,6 +58,11 @@ coverage: ## Sinh báo cáo coverage HTML vào ./tmp
 	go test -race -count=1 -v -coverprofile=./tmp/coverage.out -covermode=atomic ./...
 	go tool cover -html=./tmp/coverage.out -o ./tmp/coverage.html
 
+.PHONY: tidy
+tidy: ## Xóa các dependencies không cần thiết
+	go mod tidy
+	go mod vendor
+
 .PHONY: try
 try: ## Gửi request thử endpoint register
 	curl -X POST http://localhost:8080/api/v1/users/register -H "Content-Type: application/json" -d '{"email": "ndinhbang@example.com", "password": "password"}'
