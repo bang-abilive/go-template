@@ -3,7 +3,7 @@ package pgsql
 import (
 	"context"
 	"fmt"
-	"ndinhbang/go-skeleton/pkg/config"
+	"ndinhbang/go-template/pkg/config"
 	"strconv"
 	"time"
 

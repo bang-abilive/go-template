@@ -8,14 +8,14 @@ import (
 	"testing"
 	"time"
 
-	"ndinhbang/go-skeleton/pkg/config"
-	"ndinhbang/go-skeleton/pkg/database"
+	"ndinhbang/go-template/pkg/config"
+	"ndinhbang/go-template/pkg/database"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
-// *pgsqlCompat must implement [database.Database] (see ndinhbang/go-skeleton/internal/database).
+// *pgsqlCompat must implement [database.Database] (see ndinhbang/go-template/internal/database).
 var _ database.Database = (*pgsqlNative)(nil)
 
 // assertUnreachableDBError accepts multiple failure modes when nothing is listening

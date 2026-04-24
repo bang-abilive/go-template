@@ -3,8 +3,8 @@ package user
 import (
 	"context"
 	"errors"
-	"ndinhbang/go-skeleton/internal/domain/entity"
-	"ndinhbang/go-skeleton/internal/domain/values"
+	"ndinhbang/go-template/internal/domain/entity"
+	"ndinhbang/go-template/internal/domain/values"
 )
 
 type Service interface {

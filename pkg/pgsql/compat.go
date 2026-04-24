@@ -4,7 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
-	"ndinhbang/go-skeleton/pkg/config"
+	"ndinhbang/go-template/pkg/config"
 	"strconv"
 	"time"
 

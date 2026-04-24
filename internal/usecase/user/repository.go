@@ -2,7 +2,7 @@ package user
 
 import (
 	"context"
-	"ndinhbang/go-skeleton/internal/domain/entity"
+	"ndinhbang/go-template/internal/domain/entity"
 )
 
 type UserRepository interface {

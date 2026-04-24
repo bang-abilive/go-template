@@ -5,12 +5,12 @@ import (
 	"testing"
 	"time"
 
-	"ndinhbang/go-skeleton/pkg/database"
+	"ndinhbang/go-template/pkg/database"
 
 	"github.com/stretchr/testify/require"
 )
 
-// *pgsqlCompat must implement [database.Database] (see ndinhbang/go-skeleton/internal/database).
+// *pgsqlCompat must implement [database.Database] (see ndinhbang/go-template/internal/database).
 var _ database.Database = (*pgsqlCompat)(nil)
 
 func TestNewPgsqlCompat_HealthCheck_unreachable(t *testing.T) {

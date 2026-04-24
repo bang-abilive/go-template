@@ -6,12 +6,12 @@ import (
 
 	"net/http"
 
-	v1 "ndinhbang/go-skeleton/internal/delivery/http/v1"
-	"ndinhbang/go-skeleton/internal/repository/postgres"
-	"ndinhbang/go-skeleton/internal/usecase/user"
-	"ndinhbang/go-skeleton/pkg/config"
-	"ndinhbang/go-skeleton/pkg/pgsql"
-	"ndinhbang/go-skeleton/pkg/server"
+	v1 "ndinhbang/go-template/internal/delivery/http/v1"
+	"ndinhbang/go-template/internal/repository/postgres"
+	"ndinhbang/go-template/internal/usecase/user"
+	"ndinhbang/go-template/pkg/config"
+	"ndinhbang/go-template/pkg/pgsql"
+	"ndinhbang/go-template/pkg/server"
 
 	"github.com/labstack/echo/v5"
 )

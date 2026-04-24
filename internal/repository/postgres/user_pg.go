@@ -3,8 +3,8 @@ package postgres
 import (
 	"context"
 	"errors"
-	"ndinhbang/go-skeleton/internal/domain/entity"
-	"ndinhbang/go-skeleton/internal/usecase/user"
+	"ndinhbang/go-template/internal/domain/entity"
+	"ndinhbang/go-template/internal/usecase/user"
 
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"

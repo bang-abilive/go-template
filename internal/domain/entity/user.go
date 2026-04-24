@@ -1,7 +1,7 @@
 package entity
 
 import (
-	"ndinhbang/go-skeleton/internal/domain/values"
+	"ndinhbang/go-template/internal/domain/values"
 	"time"
 )
 

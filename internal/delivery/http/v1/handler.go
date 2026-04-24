@@ -1,7 +1,7 @@
 package v1
 
 import (
-	"ndinhbang/go-skeleton/internal/usecase/user"
+	"ndinhbang/go-template/internal/usecase/user"
 	"net/http"
 
 	"github.com/labstack/echo/v5"

@@ -13,7 +13,7 @@ import (
 	"testing"
 	"time"
 
-	"ndinhbang/go-skeleton/pkg/config"
+	"ndinhbang/go-template/pkg/config"
 
 	"github.com/labstack/echo/v5"
 	"github.com/stretchr/testify/assert"

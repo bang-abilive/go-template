@@ -6,7 +6,7 @@ import (
 
 	"github.com/labstack/echo/v5"
 
-	"ndinhbang/go-skeleton/pkg/config"
+	"ndinhbang/go-template/pkg/config"
 )
 
 type Server struct {

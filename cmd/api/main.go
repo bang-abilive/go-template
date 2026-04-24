@@ -7,8 +7,8 @@ import (
 	"os/signal"
 	"syscall"
 
-	"ndinhbang/go-skeleton/internal/app"
-	"ndinhbang/go-skeleton/pkg/config"
+	"ndinhbang/go-template/internal/app"
+	"ndinhbang/go-template/pkg/config"
 )
 
 func main() {
