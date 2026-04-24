@@ -27,7 +27,7 @@ go vet ./...                         # Run static analysis
 golangci-lint run                    # Run all linters
 ```
 
-# Project structure (Hexagonal/Clean Architecture)
+## Project structure (Hexagonal/Clean Architecture)
 
 ```bash
 .
