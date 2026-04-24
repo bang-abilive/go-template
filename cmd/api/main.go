@@ -19,17 +19,18 @@ func main() {
 }
 
 func run() error {
-	// Load the configuration
+	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
+	defer stop()
+	return runContext(ctx)
+}
+
+// runContext loads config, builds the app, and runs until ctx is done.
+// Called from [run] and from tests in this package.
+func runContext(ctx context.Context) error {
 	cfg, err := config.LoadFromEnv()
 	if err != nil {
 		return err
 	}
-	// Setup signal handling
-	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
-	// Stop listening for signals when the context is done
-	defer stop()
-	// Create the application
-	app := app.NewApp(cfg)
-	// Run the application
-	return app.Run(ctx)
+	application := app.NewApp(cfg)
+	return application.Run(ctx)
 }

@@ -8,8 +8,8 @@ import (
 	"testing"
 	"time"
 
-	"ndinhbang/go-skeleton/internal/database"
 	"ndinhbang/go-skeleton/pkg/config"
+	"ndinhbang/go-skeleton/pkg/database"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
