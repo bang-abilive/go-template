@@ -1,3 +1,5 @@
+MIGRATION_TABLE="migrations"
+
 .DEFAULT_GOAL := help
 
 .PHONY: help
@@ -22,12 +24,12 @@ migration: ## Tạo migration mới (name=...)
 .PHONY: migrate/up
 migrate/up: ## Chạy toàn bộ migration up
 	goose validate -v
-	goose up -v
+	goose up -v -table=$(MIGRATION_TABLE)
 
 .PHONY: migrate/down
 migrate/down: ## Rollback migration gần nhất
 	goose validate -v
-	goose down -v
+	goose down -v -table=$(MIGRATION_TABLE)
 
 .PHONY: build
 build: ## Build binary API vào ./tmp/main
