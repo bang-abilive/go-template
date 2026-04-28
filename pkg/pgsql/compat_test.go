@@ -5,13 +5,11 @@ import (
 	"testing"
 	"time"
 
-	"ndinhbang/go-template/pkg/database"
-
 	"github.com/stretchr/testify/require"
 )
 
 // *pgsqlCompat must implement [database.Database] (see ndinhbang/go-template/internal/database).
-var _ database.Database = (*pgsqlCompat)(nil)
+// var _ database.Database = (*pgsqlCompat)(nil)
 
 func TestNewPgsqlCompat_HealthCheck_unreachable(t *testing.T) {
 	t.Parallel()

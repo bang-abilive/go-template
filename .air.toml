@@ -31,7 +31,7 @@ tmp_dir = "tmp"
   full_bin = ""
   ignore_dangerous_root_dir = false
   include_dir = []
-  include_ext = ["go", "tpl", "tmpl", "html", "json", "yaml", "yml"]
+  include_ext = ["go", "tpl", "tmpl", "html", "json", "yaml", "yml", "conf"]
   include_file = [
     ".env",
     ".env.local",

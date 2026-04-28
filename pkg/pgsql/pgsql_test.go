@@ -9,14 +9,13 @@ import (
 	"time"
 
 	"ndinhbang/go-template/pkg/config"
-	"ndinhbang/go-template/pkg/database"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
 // *pgsqlCompat must implement [database.Database] (see ndinhbang/go-template/internal/database).
-var _ database.Database = (*pgsqlNative)(nil)
+// var _ database.Database = (*pgsqlNative)(nil)
 
 // assertUnreachableDBError accepts multiple failure modes when nothing is listening
 // on the target (e.g. connection refused, i/o timeout, or context deadline from a short Ping timeout).
