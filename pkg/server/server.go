@@ -7,6 +7,7 @@ import (
 	"github.com/labstack/echo/v5"
 
 	"ndinhbang/go-template/pkg/config"
+	"ndinhbang/go-template/pkg/validation"
 )
 
 type Server struct {
@@ -18,7 +19,8 @@ func New(cfg *config.ServerConfig) *Server {
 	return &Server{
 		cfg: cfg,
 		echo: echo.NewWithConfig(echo.Config{
-			Logger: slog.Default(),
+			Logger:    slog.Default(),
+			Validator: validation.NewValidation(),
 		}),
 	}
 }
