@@ -7,8 +7,7 @@ import (
 	"os/signal"
 	"syscall"
 
-	"ndinhbang/go-template/internal/app"
-	"ndinhbang/go-template/pkg/config"
+	"ndinhbang/go-template/pkg/app"
 )
 
 func main() {
@@ -24,13 +23,12 @@ func run() error {
 	return runContext(ctx)
 }
 
-// runContext loads config, builds the app, and runs until ctx is done.
+// runContext builds the app via DI and runs until ctx is done.
 // Called from [run] and from tests in this package.
 func runContext(ctx context.Context) error {
-	cfg, err := config.LoadFromEnv()
+	application, err := app.Initialize(ctx)
 	if err != nil {
 		return err
 	}
-	application := app.NewApp(cfg)
 	return application.Run(ctx)
 }

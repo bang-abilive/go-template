@@ -2,6 +2,7 @@ package authorizer
 
 import (
 	"fmt"
+	"ndinhbang/go-template/pkg/config"
 	"ndinhbang/go-template/pkg/db"
 
 	"github.com/casbin/casbin/v3"
@@ -37,4 +38,8 @@ func NewAuthorizer(db *db.PostgresDatabase, dbName string, tableName string) (*A
 	return &Authorizer{
 		enforcer: enforcer,
 	}, nil
+}
+
+func NewDefaultAuthorizer(db *db.PostgresDatabase, cfg *config.DatabaseConfig) (*Authorizer, error) {
+	return NewAuthorizer(db, cfg.Name, "policies")
 }
