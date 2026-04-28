@@ -7,7 +7,7 @@ import (
 	"os/signal"
 	"syscall"
 
-	"ndinhbang/go-template/pkg/app"
+	"ndinhbang/go-template/internal/app"
 )
 
 func main() {
