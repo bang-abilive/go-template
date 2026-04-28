@@ -38,7 +38,7 @@ require (
 	github.com/casbin/casbin/v3 v3.10.0
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/jackc/pgx/v5 v5.9.2
-	github.com/mazrean/kessoku v1.1.0 // indirect
+	github.com/mazrean/kessoku v1.1.0
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	golang.org/x/mod v0.34.0 // indirect
 	golang.org/x/sync v0.20.0 // indirect
