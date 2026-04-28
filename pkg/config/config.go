@@ -88,8 +88,16 @@ func LoadFromEnv() (*Config, error) {
 	return &cfg, nil
 }
 
+func GetServerConfig(cfg *Config) *ServerConfig {
+	return &cfg.Server
+}
+
 func (s ServerConfig) ServerAddress() string {
 	return fmt.Sprintf(":%d", s.Port)
+}
+
+func GetDatabaseConfig(cfg *Config) *DatabaseConfig {
+	return &cfg.Database
 }
 
 func (c DatabaseConfig) DatabaseDSN() string {
