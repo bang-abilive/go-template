@@ -40,6 +40,7 @@ require (
 	github.com/jackc/pgx/v5 v5.9.2
 	github.com/mazrean/kessoku v1.1.0
 	github.com/pmezard/go-difflib v1.0.0 // indirect
+	github.com/samber/lo v1.53.0
 	golang.org/x/mod v0.34.0 // indirect
 	golang.org/x/sync v0.20.0 // indirect
 	golang.org/x/time v0.14.0 // indirect
