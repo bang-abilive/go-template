@@ -10,6 +10,7 @@ help: ## Hiển thị danh sách target và mô tả
 .PHONY: tools
 tools: ## Cài đặt công cụ cần thiết
 	go install github.com/pressly/goose/v3/cmd/goose@latest
+	go install github.com/mazrean/kessoku/cmd/kessoku@latest
 
 .PHONY: migration
 migration: ## Tạo migration mới (name=...)
@@ -64,6 +65,14 @@ coverage: ## Sinh báo cáo coverage HTML vào ./tmp
 tidy: ## Xóa các dependencies không cần thiết
 	go mod tidy
 	go mod vendor
+
+.PHONY: di
+di: ## Generate kessoku injectors
+	go generate ./...
+
+.PHONY: seed
+seed: ## Seed the database
+	go run -race ./cmd/api -seed
 
 .PHONY: try
 try: ## Gửi request thử endpoint register
