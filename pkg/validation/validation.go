@@ -1,6 +1,8 @@
 package validation
 
 import (
+	"ndinhbang/go-template/pkg/validation/rules"
+
 	"github.com/go-playground/validator/v10"
 	"github.com/labstack/echo/v5"
 )
@@ -10,8 +12,11 @@ type Validation struct {
 }
 
 func NewValidation() *Validation {
+	v := validator.New(validator.WithRequiredStructEnabled())
+	// Register custom validation rules
+	v.RegisterValidation("alpha_dash", rules.AlphaDash)
 	return &Validation{
-		validator: validator.New(validator.WithRequiredStructEnabled()),
+		validator: v,
 	}
 }
 
