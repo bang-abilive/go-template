@@ -55,8 +55,8 @@ func TestServerAddress(t *testing.T) {
 
 	tests := []struct {
 		name     string
-		port     uint16
 		expected string
+		port     uint16
 	}{
 		{name: "default port 8080", port: 8080, expected: ":8080"},
 		{name: "custom port 3000", port: 3000, expected: ":3000"},
@@ -78,8 +78,8 @@ func TestDatabaseDSN(t *testing.T) {
 
 	tests := []struct {
 		name string
-		cfg  DatabaseConfig
 		want string
+		cfg  DatabaseConfig
 	}{
 		{
 			name: "typical",
@@ -232,8 +232,8 @@ func TestLoadFromEnv_ValidAppEnvNames(t *testing.T) {
 // trong cấu hình database sẽ trả về lỗi. (DB_PORT rỗng không thử: có envDefault nên vẫn parse được.)
 func TestLoadFromEnv_MissingRequiredFields(t *testing.T) {
 	tests := []struct {
-		name  string
 		setup func(t *testing.T)
+		name  string
 	}{
 		{
 			name: "empty DB_NAME",

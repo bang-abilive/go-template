@@ -5,16 +5,16 @@ import (
 	"time"
 )
 
-type Permissions map[string]bool
+type PermissionMap map[string]bool
 
 type Role struct {
-	ID          int64
-	Slug        values.Slug
-	Name        string
-	Lv          int
-	Permissions Permissions
 	CreatedAt   time.Time
+	Permissions PermissionMap
+	Slug        values.Slug
 	UpdatedAt   time.Time
+	Name        string
+	ID          int64
+	Lv          int
 }
 
 type UserRole struct {

@@ -1,7 +1,6 @@
 package entity
 
 type Policy struct {
-	ID    int
 	PType string
 	V0    string
 	V1    string
@@ -9,4 +8,5 @@ type Policy struct {
 	V3    string
 	V4    string
 	V5    string
+	ID    int
 }

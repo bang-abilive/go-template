@@ -6,10 +6,10 @@ import (
 )
 
 type User struct {
-	ID        int64
+	CreatedAt time.Time
+	UpdatedAt time.Time
 	Name      string
 	Email     values.Email
 	Password  string
-	CreatedAt time.Time
-	UpdatedAt time.Time
+	ID        int64
 }

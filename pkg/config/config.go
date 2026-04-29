@@ -14,25 +14,24 @@ import (
 
 type AppConfig struct {
 	Env     string `env:"APP_ENV,notEmpty" envDefault:"development"`
-	Debug   bool   `env:"APP_DEBUG" envDefault:"false"`
 	Name    string `env:"APP_NAME"`
 	Version string `env:"APP_VERSION" envDefault:"0.0.1"`
+	Debug   bool   `env:"APP_DEBUG" envDefault:"false"`
 }
 
 type DatabaseConfig struct {
-	Name         string `env:"DB_NAME,notEmpty"`
-	Schema       string `env:"DB_SCHEMA,notEmpty" envDefault:"public"`
-	Host         string `env:"DB_HOST,notEmpty"`
-	Port         uint16 `env:"DB_PORT,notEmpty" envDefault:"5432"`
-	User         string `env:"DB_USER,notEmpty,unset"`
-	Password     string `env:"DB_PASSWORD,notEmpty,unset"`
-	SSLMode      string `env:"DB_SSL_MODE" envDefault:"disable"`
-	MaxConns     int32  `env:"DB_MAX_CONNS" envDefault:"20"`
-	MinConns     int32  `env:"DB_MIN_CONNS" envDefault:"5"`
-	MaxIdleConns int32  `env:"DB_MAX_IDLE_CONNS" envDefault:"5"`
-	// MaxLifetimeConns time.Duration `env:"DB_MAX_LIFETIME_CONNS" envDefault:"1h"`
+	Name            string        `env:"DB_NAME,notEmpty"`
+	Schema          string        `env:"DB_SCHEMA,notEmpty" envDefault:"public"`
+	Host            string        `env:"DB_HOST,notEmpty"`
+	User            string        `env:"DB_USER,notEmpty,unset"`
+	Password        string        `env:"DB_PASSWORD,notEmpty,unset"`
+	SSLMode         string        `env:"DB_SSL_MODE" envDefault:"disable"`
 	MaxConnIdleTime time.Duration `env:"DB_MAX_CONN_IDLE_TIME" envDefault:"10m"`
 	MaxConnLifetime time.Duration `env:"DB_MAX_CONN_LIFETIME" envDefault:"1h"`
+	MaxConns        int32         `env:"DB_MAX_CONNS" envDefault:"20"`
+	MinConns        int32         `env:"DB_MIN_CONNS" envDefault:"5"`
+	MaxIdleConns    int32         `env:"DB_MAX_IDLE_CONNS" envDefault:"5"`
+	Port            uint16        `env:"DB_PORT,notEmpty" envDefault:"5432"`
 }
 
 type ServerConfig struct {

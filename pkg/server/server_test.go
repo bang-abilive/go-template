@@ -59,12 +59,12 @@ func TestSetupMiddlewares_Default(t *testing.T) {
 	})
 
 	tests := []struct {
+		checkFn    func(t *testing.T, rec *httptest.ResponseRecorder)
 		name       string
 		method     string
 		path       string
 		body       string
 		wantStatus int
-		checkFn    func(t *testing.T, rec *httptest.ResponseRecorder)
 	}{
 		{
 			name:       "small body is accepted",
@@ -286,8 +286,8 @@ func TestSetupRoutes(t *testing.T) {
 		name       string
 		method     string
 		path       string
-		wantStatus int
 		wantBody   string
+		wantStatus int
 	}{
 		{
 			name:       "root endpoint returns welcome message",
@@ -414,13 +414,13 @@ func TestServerConfig_Address(t *testing.T) {
 
 	tests := []struct {
 		name string
-		port uint16
 		want string
+		port uint16
 	}{
-		{"standard HTTP port", 80, ":80"},
-		{"standard HTTPS port", 443, ":443"},
-		{"default app port", 8080, ":8080"},
-		{"custom port", 9090, ":9090"},
+		{name: "standard HTTP port", port: 80, want: ":80"},
+		{name: "standard HTTPS port", port: 443, want: ":443"},
+		{name: "default app port", port: 8080, want: ":8080"},
+		{name: "custom port", port: 9090, want: ":9090"},
 	}
 
 	for _, tt := range tests {
