@@ -30,10 +30,10 @@ func NewAuthorizer(db *db.PostgresDatabase, dbName string, tableName string) (*A
 		return nil, fmt.Errorf("[authorizer] create enforcer: %w", err)
 	}
 
-	// // Load the policy from DB.
-	// if err = enforcer.LoadPolicy(); err != nil {
-	// 	return nil, fmt.Errorf("[authorizer] load policy: %w", err)
-	// }
+	// Load the policy from DB.
+	if err = enforcer.LoadPolicy(); err != nil {
+		return nil, fmt.Errorf("[authorizer] load policy: %w", err)
+	}
 
 	return &Authorizer{
 		enforcer: enforcer,
@@ -42,4 +42,8 @@ func NewAuthorizer(db *db.PostgresDatabase, dbName string, tableName string) (*A
 
 func NewDefaultAuthorizer(db *db.PostgresDatabase, cfg *config.DatabaseConfig) (*Authorizer, error) {
 	return NewAuthorizer(db, cfg.Name, "policies")
+}
+
+func (a *Authorizer) GetEnforcer() *casbin.Enforcer {
+	return a.enforcer
 }
