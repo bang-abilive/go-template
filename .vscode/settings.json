@@ -2,19 +2,15 @@
     "githd.blameView.enabled": "disabled",
     "git.blame.editorDecoration.enabled": false,
     "gopls": {
-        "ui.diagnostic.staticcheck": true,
         "ui.semanticTokens": true,
+        // gopls cũng bao gồm cả bộ công cụ staticcheck. Khi tùy chọn boolean staticcheck không được thiết lập (unset),
+        // hơn một nửa số lượng các bộ phân tích (analyzers) này sẽ được bật theo mặc định;
+        // tập hợp con này đã được lựa chọn kỹ lưỡng để đảm bảo tính chính xác và hiệu năng (precision and efficiency).
+        // Hãy thiết lập staticcheck thành true để bật toàn bộ các bộ phân tích, hoặc thành false để vô hiệu hóa hoàn toàn chúng
+        "ui.diagnostic.staticcheck": true,
         // https://github.com/golang/tools/blob/master/gopls/doc/analyzers.md
         "ui.diagnostic.analyses": {
-            "ST1000": false,
-            // "S1006": true,
-            // "S1011": true,
-            // "S1016": true,
-            // "SA1015": true,
-            // "SA1017": true,
-            // "SA1023": true,
-            // "SA1024": true,
-            // "SA2002": true,
+            "ST1000": false
         }
     }
 }
