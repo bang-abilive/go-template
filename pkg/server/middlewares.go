@@ -1,3 +1,4 @@
+// Package server contains the HTTP server implementation.
 package server
 
 import (

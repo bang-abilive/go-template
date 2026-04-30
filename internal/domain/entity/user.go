@@ -1,3 +1,4 @@
+// Package entity contains the domain entities for the application.
 package entity
 
 import (

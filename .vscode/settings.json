@@ -1,4 +1,7 @@
 {
     "githd.blameView.enabled": "disabled",
-    "git.blame.editorDecoration.enabled": false
+    "git.blame.editorDecoration.enabled": false,
+    "gopls": {
+        "ui.diagnostic.staticcheck": true
+    }
 }
