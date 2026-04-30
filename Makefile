@@ -12,7 +12,6 @@ tools: ## Cài đặt công cụ cần thiết
 	go install github.com/pressly/goose/v3/cmd/goose@latest
 	go install github.com/mazrean/kessoku/cmd/kessoku@latest
 	go install golang.org/x/tools/go/analysis/passes/fieldalignment/cmd/fieldalignment@latest
-# 	go install honnef.co/go/tools/cmd/staticcheck@latest
 
 .PHONY: migration
 migration: ## Tạo migration mới (name=...)

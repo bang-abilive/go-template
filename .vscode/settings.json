@@ -2,6 +2,19 @@
     "githd.blameView.enabled": "disabled",
     "git.blame.editorDecoration.enabled": false,
     "gopls": {
-        "ui.diagnostic.staticcheck": true
+        "ui.diagnostic.staticcheck": true,
+        "ui.semanticTokens": true,
+        // https://github.com/golang/tools/blob/master/gopls/doc/analyzers.md
+        "ui.diagnostic.analyses": {
+            "ST1000": false,
+            // "S1006": true,
+            // "S1011": true,
+            // "S1016": true,
+            // "SA1015": true,
+            // "SA1017": true,
+            // "SA1023": true,
+            // "SA1024": true,
+            // "SA2002": true,
+        }
     }
 }
