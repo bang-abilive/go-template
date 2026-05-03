@@ -19,7 +19,7 @@ func (s *Seeder) seedUsers(ctx context.Context) error {
 		Password: password,
 	}
 
-	if err := s.db.GetPool().QueryRow(ctx, "INSERT INTO users (email, password) VALUES ($1, $2) RETURNING id", user.Email.Value(), user.Password).Scan(&user.ID); err != nil {
+	if err := s.db.Pool().QueryRow(ctx, "INSERT INTO users (email, password) VALUES ($1, $2) RETURNING id", user.Email.Value(), user.Password).Scan(&user.ID); err != nil {
 		return fmt.Errorf("[seeders] seed users: %w", err)
 	} else {
 		slog.Info("[seeders] user seeded:", "email", user.Email.Value())

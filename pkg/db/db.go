@@ -52,6 +52,6 @@ func (db *PostgresDatabase) Close() error {
 	return nil
 }
 
-func (db PostgresDatabase) GetPool() *pgxpool.Pool {
+func (db PostgresDatabase) Pool() *pgxpool.Pool {
 	return db.pool
 }

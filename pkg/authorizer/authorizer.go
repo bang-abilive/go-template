@@ -15,7 +15,7 @@ type Authorizer struct {
 
 func NewAuthorizer(db *db.PostgresDatabase, dbName string, tableName string) (*Authorizer, error) {
 	// Create the adapter with optional configuration
-	adapter, err := pgxadapter.NewAdapterWithPool(db.GetPool(),
+	adapter, err := pgxadapter.NewAdapterWithPool(db.Pool(),
 		pgxadapter.WithDatabaseName(dbName),
 		pgxadapter.WithTableName(tableName),
 		// pgxadapter.WithIndex("ptype", "v0"),

@@ -32,41 +32,42 @@ golangci-lint run                    # Run all linters
 ```bash
 .
 ├── cmd/
-│   └── api/
-│       └── main.go             # Nơi duy nhất thực hiện Dependency Injection
+│   └── api/
+│       └── main.go             # Nơi duy nhất thực hiện Dependency Injection
 ├── internal/
-│   ├── domain/                 # TẦNG 1: BUSINESS LOGIC (Core)
-│   │   ├── entity/             # Các đối tượng nghiệp vụ (User, Article)
-│   │   │   └── user.go      
-│   │   ├── values/             # Value Objects (Email, Password, etc.)
-│   │   │   └── email.go     
-│   │   ├── errors/             # Errors
-│   ├── usecase/                # TẦNG 2: APPLICATION LOGIC - Điều phối dữ liệu (Service Layer)
-│   │   ├── user/               # Chia theo module nghiệp vụ (user, article, etc.)
-│   │   │   ├── input.go        # Interface/DTO đầu vào của UseCase (RegisterUserRequest, etc.)
-│   │   │   ├── output.go       # Interface/DTO đầu ra của UseCase (RegisterUserResponse, etc.)
-│   │   │   ├── repository.go   # Interface định nghĩa các phương thức lưu trữ (UserRepository, etc.)
-│   │   │   └── service.go      # Triển khai nghiệp vụ (ví dụ: Register, Login)
-│   ├── delivery/               # TẦNG 3: INTERFACE ADAPTERS (Input)
-│   │   ├── grpc/               # gRPC
-│   │   └── http/               # Echo Web Framework (Handlers, Middlewares)
-│   │       ├── middleware/     # Middleware
-│   │       └── v1/             # Versioning (API)
-│   │           ├── handler/    # Handler (Request)
-│   │           └── presenter/  # Presenter (Response)
-│   └── repository/             # TẦNG 3: INTERFACE ADAPTERS (Output)
-│       └── postgres/           # Implement Repository Interface bằng pgx (Postgres)
-│           └── user_pg.go
-├── pkg/                        # THƯ VIỆN DÙNG CHUNG - Các tiện ích không chứa logic nghiệp vụ
-│    └── pgsql/                  
-├── migrations/                 # Database migrations
-├── compose.yml                 # Docker compose file
-├── .env                        # Environment variables
-├── .env.example                # Environment variables example
-├── .gitignore                  # Git ignore file
-├── Makefile                    # Makefile
-├── README.md                   # README file
-├── go.mod                      # Go module file
-├── go.sum                      # Go sum file
-├── .air.toml                   # Air configuration file
+│   ├── domain/                 # TẦNG 1: BUSINESS LOGIC (Core)
+│   │   ├── entity/             # Các đối tượng nghiệp vụ (User, Article)
+│   │   │   └── user.go
+│   │   ├── values/             # Value Objects (Email, Password, etc.)
+│   │   │   └── email.go
+│   │   ├── errors/             # Errors
+│   ├── usecase/                # TẦNG 2: APPLICATION LOGIC - Điều phối dữ liệu (Service Layer)
+│   │   ├── user/               # Chia theo module nghiệp vụ (user, article, etc.)
+│   │   │   ├── input.go        # Interface/DTO đầu vào của UseCase (RegisterUserRequest, etc.)
+│   │   │   ├── output.go       # Interface/DTO đầu ra của UseCase (RegisterUserResponse, etc.)
+│   │   │   ├── repository.go   # Interface định nghĩa các phương thức lưu trữ (UserRepository, etc.)
+│   │   │   └── service.go      # Triển khai nghiệp vụ (ví dụ: Register, Login)
+│   ├── delivery/               # TẦNG 3: INTERFACE ADAPTERS (Input)
+│   │   ├── grpc/               # gRPC
+│   │   └── http/               # Echo Web Framework (Handlers, Middlewares)
+│   │       ├── routes/         # Định nghĩa các route và nhóm route
+│   │       ├── middleware/     # Middleware
+│   │       └── v1/             # Versioning (API)
+│   │           ├── handler/    # Handler (Request)
+│   │           └── presenter/  # Presenter (Response)
+│   └── repository/             # TẦNG 3: INTERFACE ADAPTERS (Output)
+│       └── postgres/           # Implement Repository Interface bằng pgx (Postgres)
+│           └── user.go
+├── pkg/                        # THƯ VIỆN DÙNG CHUNG - Các tiện ích không chứa logic nghiệp vụ
+│    └── db/
+├── migrations/                 # Database migrations
+├── compose.yml                 # Docker compose file
+├── .env                        # Environment variables
+├── .env.example                # Environment variables example
+├── .gitignore                  # Git ignore file
+├── Makefile                    # Makefile
+├── README.md                   # README file
+├── go.mod                      # Go module file
+├── go.sum                      # Go sum file
+├── .air.toml                   # Air configuration file
 ```

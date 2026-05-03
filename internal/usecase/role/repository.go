@@ -5,7 +5,7 @@ import (
 	"ndinhbang/go-template/internal/domain/entity"
 )
 
-type RoleRepository interface {
+type Repository interface {
 	Create(ctx context.Context, role *entity.Role) error
 	Update(ctx context.Context, role *entity.Role) error
 	Delete(ctx context.Context, id int64) error

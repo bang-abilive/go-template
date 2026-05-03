@@ -7,22 +7,22 @@ import (
 )
 
 type Service interface {
-	Create(ctx context.Context, in CreateRoleRequest) (CreateRoleResponse, error)
+	Create(ctx context.Context, in CreateRequest) (CreateResponse, error)
 }
 
 type service struct {
-	repository RoleRepository
+	repository Repository
 }
 
-func NewService(repository RoleRepository) Service {
+func NewService(repository Repository) Service {
 	return &service{repository: repository}
 }
 
-func (s *service) Create(ctx context.Context, in CreateRoleRequest) (CreateRoleResponse, error) {
+func (s *service) Create(ctx context.Context, in CreateRequest) (CreateResponse, error) {
 	// 1. Validate & Khởi tạo Value Object
 	slugVO, err := values.NewSlug(in.Slug)
 	if err != nil {
-		return CreateRoleResponse{}, err
+		return CreateResponse{}, err
 	}
 
 	// 3. Khởi tạo Entity
@@ -35,10 +35,10 @@ func (s *service) Create(ctx context.Context, in CreateRoleRequest) (CreateRoleR
 
 	// 4. Lưu trữ
 	if err := s.repository.Create(ctx, r); err != nil {
-		return CreateRoleResponse{}, err
+		return CreateResponse{}, err
 	}
 
-	return CreateRoleResponse{
+	return CreateResponse{
 		ID:        r.ID,
 		Slug:      r.Slug.Value(),
 		CreatedAt: r.CreatedAt,

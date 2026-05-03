@@ -10,6 +10,15 @@ import (
 	"ndinhbang/go-template/pkg/validation"
 )
 
+// GroupRegistrar is implemented by any type that can register its routes onto an echo Group.
+type GroupRegistrar interface {
+	RegisterRoutes(e *echo.Group)
+}
+
+type RouteRegistrar interface {
+	RegisterRoutes(e *echo.Echo)
+}
+
 type Server struct {
 	cfg  *config.ServerConfig
 	echo *echo.Echo

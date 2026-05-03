@@ -268,19 +268,20 @@ func TestSetupMiddlewares_CustomSkipsDefaults(t *testing.T) {
 // Routes
 // ---------------------------------------------------------------------------
 
+// routeRegistrar is a test helper that adapts a plain func into a RouteRegistrar.
+type routeRegistrar func(e *echo.Echo)
+
+func (r routeRegistrar) RegisterRoutes(e *echo.Echo) { r(e) }
+
 func TestSetupRoutes(t *testing.T) {
 	t.Parallel()
 
 	srv := newTestServer(t)
-	srv.SetupRoutes([]echo.Route{
-		{
-			Method: http.MethodGet,
-			Path:   "/api/v1/hello",
-			Handler: func(c *echo.Context) error {
-				return c.String(http.StatusOK, "Hello, World!")
-			},
-		},
-	})
+	srv.SetupRoutes(routeRegistrar(func(e *echo.Echo) {
+		e.GET("/v1/hello", func(c *echo.Context) error {
+			return c.String(http.StatusOK, "Hello, World!")
+		})
+	}))
 
 	tests := []struct {
 		name       string
@@ -306,7 +307,7 @@ func TestSetupRoutes(t *testing.T) {
 		{
 			name:       "hello endpoint returns greeting",
 			method:     http.MethodGet,
-			path:       "/api/v1/hello",
+			path:       "/v1/hello",
 			wantStatus: http.StatusOK,
 			wantBody:   "Hello, World!",
 		},
@@ -338,15 +339,11 @@ func TestSetupRoutes_MethodNotAllowed(t *testing.T) {
 	t.Parallel()
 
 	srv := newTestServer(t)
-	srv.SetupRoutes([]echo.Route{
-		{
-			Method: http.MethodGet,
-			Path:   "/api/v1/hello",
-			Handler: func(c *echo.Context) error {
-				return c.String(http.StatusOK, "Hello, World!")
-			},
-		},
-	})
+	srv.SetupRoutes(routeRegistrar(func(e *echo.Echo) {
+		e.GET("/v1/hello", func(c *echo.Context) error {
+			return c.String(http.StatusOK, "Hello, World!")
+		})
+	}))
 
 	tests := []struct {
 		name   string
@@ -355,7 +352,7 @@ func TestSetupRoutes_MethodNotAllowed(t *testing.T) {
 	}{
 		{"POST to root", http.MethodPost, "/"},
 		{"DELETE to health", http.MethodDelete, "/health"},
-		{"PUT to hello", http.MethodPut, "/api/v1/hello"},
+		{"PUT to hello", http.MethodPut, "/v1/hello"},
 	}
 
 	for _, tt := range tests {

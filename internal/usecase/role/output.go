@@ -5,7 +5,7 @@ import (
 	"time"
 )
 
-type CreateRoleResponse struct {
+type CreateResponse struct {
 	CreatedAt   time.Time            `json:"created_at"`
 	Permissions entity.PermissionMap `json:"permissions"`
 	Slug        string               `json:"slug"`

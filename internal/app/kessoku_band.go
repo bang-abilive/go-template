@@ -5,6 +5,13 @@ package app
 import (
 	"context"
 	"github.com/mazrean/kessoku"
+	"ndinhbang/go-template/internal/delivery/http/routes"
+	"ndinhbang/go-template/internal/delivery/http/v1"
+	"ndinhbang/go-template/internal/delivery/http/v1/handlers"
+	"ndinhbang/go-template/internal/delivery/http/v2"
+	"ndinhbang/go-template/internal/repository/postgres"
+	"ndinhbang/go-template/internal/usecase/role"
+	"ndinhbang/go-template/internal/usecase/user"
 	"ndinhbang/go-template/pkg/authorizer"
 	"ndinhbang/go-template/pkg/config"
 	"ndinhbang/go-template/pkg/db"
@@ -33,6 +40,15 @@ func Initialize(ctx context.Context) (*App, error) {
 		var zero *App
 		return zero, err1
 	}
-	app := kessoku.Provide(NewApp).Fn()(config0, server0, postgresDatabase, authorizer0)
+	userRepository := kessoku.Bind[user.Repository](kessoku.Provide(postgres.NewUserRepository)).Fn()(postgresDatabase)
+	roleRepository := kessoku.Bind[role.Repository](kessoku.Provide(postgres.NewRoleRepository)).Fn()(postgresDatabase)
+	service := kessoku.Provide(user.NewService).Fn()(userRepository)
+	service0 := kessoku.Provide(role.NewService).Fn()(roleRepository)
+	userHandler := kessoku.Provide(handlers.NewUserHandler).Fn()(service)
+	roleHandler := kessoku.Provide(handlers.NewRoleHandler).Fn()(service0)
+	routeRegistrar := kessoku.Provide(v1.New).Fn()(userHandler, roleHandler)
+	routeRegistrar0 := kessoku.Provide(v2.New).Fn()(userHandler, roleHandler)
+	registrar := kessoku.Bind[server.RouteRegistrar](kessoku.Provide(routes.NewRegistrar)).Fn()(routeRegistrar, routeRegistrar0)
+	app := kessoku.Provide(NewApp).Fn()(config0, server0, postgresDatabase, authorizer0, registrar)
 	return app, nil
 }

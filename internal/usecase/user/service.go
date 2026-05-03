@@ -8,31 +8,31 @@ import (
 )
 
 type Service interface {
-	Register(ctx context.Context, in RegisterUserRequest) (RegisterUserResponse, error)
+	Register(ctx context.Context, in RegisterRequest) (RegisterResponse, error)
 }
 
 type service struct {
-	repository UserRepository
+	repository Repository
 }
 
-func NewService(repository UserRepository) Service {
+func NewService(repository Repository) Service {
 	return &service{repository: repository}
 }
 
-func (s *service) Register(ctx context.Context, in RegisterUserRequest) (RegisterUserResponse, error) {
+func (s *service) Register(ctx context.Context, in RegisterRequest) (RegisterResponse, error) {
 	// 1. Validate & Khởi tạo Value Object
 	emailVO, err := values.NewEmail(in.Email)
 	if err != nil {
-		return RegisterUserResponse{}, err
+		return RegisterResponse{}, err
 	}
 
 	// 2. Kiểm tra nghiệp vụ
 	user, err := s.repository.FindByEmail(ctx, emailVO.Value())
 	if err != nil {
-		return RegisterUserResponse{}, err
+		return RegisterResponse{}, err
 	}
 	if user != nil {
-		return RegisterUserResponse{}, errors.New("user already exists")
+		return RegisterResponse{}, errors.New("user already exists")
 	}
 
 	// 3. Khởi tạo Entity
@@ -43,10 +43,10 @@ func (s *service) Register(ctx context.Context, in RegisterUserRequest) (Registe
 
 	// 4. Lưu trữ
 	if err := s.repository.Create(ctx, u); err != nil {
-		return RegisterUserResponse{}, err
+		return RegisterResponse{}, err
 	}
 
-	return RegisterUserResponse{
+	return RegisterResponse{
 		ID:        u.ID,
 		Email:     u.Email.Value(),
 		CreatedAt: u.CreatedAt,
