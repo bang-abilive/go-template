@@ -16,8 +16,13 @@ func NewSeeder(cfg *config.DatabaseConfig, db *db.PostgresDatabase) *Seeder {
 }
 
 func (s *Seeder) Run(ctx context.Context) error {
-	// Seed the database with the default data
 	if err := s.seedUsers(ctx); err != nil {
+		return err
+	}
+	if err := s.seedRoles(ctx); err != nil {
+		return err
+	}
+	if err := s.seedPolicies(ctx); err != nil {
 		return err
 	}
 	return nil

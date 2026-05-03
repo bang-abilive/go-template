@@ -4,25 +4,35 @@ import (
 	"context"
 	"fmt"
 	"log/slog"
-	"ndinhbang/go-template/internal/domain/entity"
-	"ndinhbang/go-template/internal/domain/values"
 )
 
+type seedUserRow struct {
+	email    string
+	password string
+}
+
+// seedUsers inserts seed users into the users table.
+// Idempotent: existing emails are updated in-place (DO UPDATE) so RETURNING always yields the id.
 func (s *Seeder) seedUsers(ctx context.Context) error {
-	emailVO, err := values.NewEmail("admin@example.com")
-	if err != nil {
-		return fmt.Errorf("[seeders] create email value object: %w", err)
-	}
-	password := "password"
-	user := &entity.User{
-		Email:    emailVO,
-		Password: password,
+	users := []seedUserRow{
+		{email: "admin@example.com", password: "password"},
+		{email: "editor@example.com", password: "password"},
+		{email: "viewer@example.com", password: "password"},
 	}
 
-	if err := s.db.Pool().QueryRow(ctx, "INSERT INTO users (email, password) VALUES ($1, $2) RETURNING id", user.Email.Value(), user.Password).Scan(&user.ID); err != nil {
-		return fmt.Errorf("[seeders] seed users: %w", err)
-	} else {
-		slog.Info("[seeders] user seeded:", "email", user.Email.Value())
+	for _, u := range users {
+		var id int64
+		err := s.db.Pool().QueryRow(ctx,
+			`INSERT INTO users (email, password)
+			 VALUES ($1, $2)
+			 ON CONFLICT (email) DO UPDATE SET email = EXCLUDED.email
+			 RETURNING id`,
+			u.email, u.password,
+		).Scan(&id)
+		if err != nil {
+			return fmt.Errorf("[seeders] seed user %s: %w", u.email, err)
+		}
+		slog.Info("[seeders] user seeded", "email", u.email, "id", id)
 	}
 	return nil
 }

@@ -1,7 +1,9 @@
 package routes
 
 import (
+	"ndinhbang/go-template/internal/delivery/http/middleware"
 	v1 "ndinhbang/go-template/internal/delivery/http/v1"
+	"ndinhbang/go-template/internal/delivery/http/v1/handlers"
 	v2 "ndinhbang/go-template/internal/delivery/http/v2"
 	"ndinhbang/go-template/pkg/server"
 
@@ -11,24 +13,39 @@ import (
 var _ server.RouteRegistrar = (*Registrar)(nil)
 
 type Registrar struct {
-	groups []server.GroupRegistrar
+	v1rr         *v1.RouteRegistrar
+	v2rr         *v2.RouteRegistrar
+	authMW       *middleware.AuthMiddleware
+	casbinMW     *middleware.CasbinMiddleware
+	authorizeHdl *handlers.AuthorizeHandler
 }
 
 func NewRegistrar(
 	v1rr *v1.RouteRegistrar,
 	v2rr *v2.RouteRegistrar,
+	authMW *middleware.AuthMiddleware,
+	casbinMW *middleware.CasbinMiddleware,
+	authorizeHdl *handlers.AuthorizeHandler,
 ) *Registrar {
 	return &Registrar{
-		groups: []server.GroupRegistrar{
-			v1rr,
-			v2rr,
-		},
+		v1rr:         v1rr,
+		v2rr:         v2rr,
+		authMW:       authMW,
+		casbinMW:     casbinMW,
+		authorizeHdl: authorizeHdl,
 	}
 }
 
 func (rr *Registrar) RegisterRoutes(e *echo.Echo) {
-	g := e.Group("/api")
-	for _, group := range rr.groups {
-		group.RegisterRoutes(g)
-	}
+	// Public group: no auth required. Used for the debug authorize endpoint.
+	public := e.Group("/api/v1")
+	rr.authorizeHdl.RegisterRoutes(public)
+
+	// Protected group: every request must carry ?user_id and pass ABAC check.
+	protected := e.Group("/api",
+		rr.authMW.Middleware(),
+		rr.casbinMW.Middleware(),
+	)
+	rr.v1rr.RegisterRoutes(protected)
+	rr.v2rr.RegisterRoutes(protected)
 }

@@ -2,6 +2,7 @@
 package app
 
 import (
+	"ndinhbang/go-template/internal/delivery/http/middleware"
 	routes "ndinhbang/go-template/internal/delivery/http/routes"
 	v1 "ndinhbang/go-template/internal/delivery/http/v1"
 	"ndinhbang/go-template/internal/delivery/http/v1/handlers"
@@ -31,6 +32,9 @@ var _ = kessoku.Inject[*App](
 	kessoku.Bind[role.Repository](kessoku.Provide(postgres.NewRoleRepository)),
 	kessoku.Provide(role.NewService),
 	kessoku.Provide(handlers.NewRoleHandler),
+	kessoku.Provide(middleware.NewAuthMiddleware),
+	kessoku.Provide(middleware.NewCasbinMiddleware),
+	kessoku.Provide(handlers.NewAuthorizeHandler),
 	kessoku.Provide(v1.New),
 	kessoku.Provide(v2.New),
 	kessoku.Bind[server.RouteRegistrar](kessoku.Provide(routes.NewRegistrar)),
